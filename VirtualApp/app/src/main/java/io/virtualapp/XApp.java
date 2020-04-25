@@ -9,6 +9,8 @@ import com.lody.virtual.client.core.VirtualCore;
 import com.lody.virtual.client.stub.VASettings;
 
 import io.virtualapp.delegate.MyVirtualInitializer;
+import io.virtualapp.screenshare.MyLifecycleHandler;
+import io.virtualapp.screenshare.SenderActivity;
 
 /**
  * @author Lody
@@ -18,6 +20,8 @@ public class XApp extends Application {
     private static final String TAG = "XApp";
 
     public static final String XPOSED_INSTALLER_PACKAGE = "de.robv.android.xposed.installer";
+
+    MyLifecycleHandler myLifecycleHandler;
 
     private static XApp gApp;
 
@@ -46,6 +50,14 @@ public class XApp extends Application {
         super.onCreate();
         VirtualCore virtualCore = VirtualCore.get();
         virtualCore.initialize(new MyVirtualInitializer(this, virtualCore));
+
+        myLifecycleHandler = new MyLifecycleHandler();
+        registerActivityLifecycleCallbacks(myLifecycleHandler);
     }
 
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+        unregisterActivityLifecycleCallbacks(myLifecycleHandler);
+    }
 }

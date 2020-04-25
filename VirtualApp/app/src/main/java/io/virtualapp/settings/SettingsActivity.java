@@ -25,6 +25,7 @@ import io.virtualapp.R;
 import io.virtualapp.VCommends;
 import io.virtualapp.gms.FakeGms;
 import io.virtualapp.home.ListAppActivity;
+import io.virtualapp.screenshare.SenderActivity;
 import io.virtualapp.utils.Misc;
 
 /**
@@ -32,6 +33,7 @@ import io.virtualapp.utils.Misc;
  */
 public class SettingsActivity extends Activity {
 
+    private static final String SCREEN_SHARE_KEY = "settings_screen_share";
     private static final String ADVANCE_SETTINGS_KEY = "settings_advance";
     private static final String ADD_APP_KEY = "settings_add_app";
     private static final String MODULE_MANAGE_KEY = "settings_module_manage";
@@ -80,6 +82,7 @@ public class SettingsActivity extends Activity {
 
             // Setup allow rotation preference
 
+            Preference screenShare = findPreference(SCREEN_SHARE_KEY);
             Preference addApp = findPreference(ADD_APP_KEY);
             Preference moduleManage = findPreference(MODULE_MANAGE_KEY);
             Preference recommend = findPreference(RECOMMEND_PLUGIN);
@@ -99,6 +102,11 @@ public class SettingsActivity extends Activity {
             SwitchPreference disableResidentNotification = (SwitchPreference) findPreference(DISABLE_RESIDENT_NOTIFICATION);
             SwitchPreference allowFakeSignature = (SwitchPreference) findPreference(ALLOW_FAKE_SIGNATURE);
             SwitchPreference disableXposed = (SwitchPreference) findPreference(DISABLE_XPOSED);
+
+            screenShare.setOnPreferenceClickListener(preference -> {
+                startActivity(new Intent(getActivity(), SenderActivity.class));
+                return false;
+            });
 
             addApp.setOnPreferenceClickListener(preference -> {
                 ListAppActivity.gotoListApp(getActivity());
