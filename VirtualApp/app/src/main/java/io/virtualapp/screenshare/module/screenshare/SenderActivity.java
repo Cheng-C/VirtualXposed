@@ -1,4 +1,4 @@
-package io.virtualapp.screenshare;
+package io.virtualapp.screenshare.module.screenshare;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,13 +10,12 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import io.virtualapp.R;
-import io.virtualapp.home.NewHomeActivity;
-import io.virtualapp.screenshare.base.BaseMvpActivity;
-import io.virtualapp.screenshare.connection.udp.OnUdpConnectListener;
-import io.virtualapp.screenshare.connection.udp.UdpClientThread;
+import io.virtualapp.screenshare.common.base.BaseMvpActivity;
 
 public class SenderActivity extends BaseMvpActivity<SenderContract.IPresenter> implements SenderContract.IView {
 
@@ -26,8 +25,11 @@ public class SenderActivity extends BaseMvpActivity<SenderContract.IPresenter> i
     private MediaProjectionManager mediaProjectionManager;
     private MediaProjection mediaProjection;
 
+    private TextView tvInputTips;
+    private EditText etSsCode;
     private Button connectButton;
     private Button screenShareButton;
+    private TextView tvTips;
 
 
     @Override
@@ -36,12 +38,16 @@ public class SenderActivity extends BaseMvpActivity<SenderContract.IPresenter> i
         setContentView(R.layout.activity_sender);
         mediaProjectionManager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
 
+        tvInputTips = findViewById(R.id.tvInputTips);
+        etSsCode = findViewById(R.id.etSsCode);
+
         connectButton = findViewById(R.id.btnConnect);
         connectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (connectButton.getText().equals("连接")) {
-                    presenter.connect();
+                if (connectButton.getText().equals("连接设备")) {
+                    presenter.connect(etSsCode.getText().toString());
+                    Toast.makeText(SenderActivity.this, "连接中...", Toast.LENGTH_SHORT).show();
                 } else {
                     presenter.disconnect();
                 }
@@ -49,7 +55,6 @@ public class SenderActivity extends BaseMvpActivity<SenderContract.IPresenter> i
         });
 
         screenShareButton = findViewById(R.id.btnScreenShare);
-        screenShareButton.setVisibility(View.INVISIBLE);
         screenShareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,13 +62,15 @@ public class SenderActivity extends BaseMvpActivity<SenderContract.IPresenter> i
                    presenter.stopScreenShare();
                    mediaProjection.stop();
                    mediaProjection = null;
-                   screenShareButton.setText("传屏");
+                   screenShareButton.setText("开始传屏");
                 } else {
                     Intent captureIntent = mediaProjectionManager.createScreenCaptureIntent();
                     startActivityForResult(captureIntent, REQUEST_SCREEN_SHARE);
                 }
             }
         });
+
+        tvTips = findViewById(R.id.tvTips);
     }
 
     @Override
@@ -112,6 +119,9 @@ public class SenderActivity extends BaseMvpActivity<SenderContract.IPresenter> i
     @Override
     public void onConnectSuccess() {
         Toast.makeText(this, "连接成功", Toast.LENGTH_SHORT).show();
+        tvInputTips.setVisibility(View.GONE);
+        etSsCode.setVisibility(View.GONE);
+        tvTips.setVisibility(View.GONE);
         screenShareButton.setVisibility(View.VISIBLE);
         connectButton.setText("断开连接");
     }
@@ -119,14 +129,18 @@ public class SenderActivity extends BaseMvpActivity<SenderContract.IPresenter> i
     @Override
     public void onDisconnectSuccess() {
         Toast.makeText(this, "断开连接成功", Toast.LENGTH_SHORT).show();
-        screenShareButton.setVisibility(View.INVISIBLE);
+        screenShareButton.setVisibility(View.GONE);
         if (mediaProjection != null) {
             presenter.stopScreenShare();
             mediaProjection.stop();
             mediaProjection = null;
-            screenShareButton.setText("传屏");
+            screenShareButton.setText("开始传屏");
         }
-        connectButton.setText("连接");
+        tvInputTips.setVisibility(View.VISIBLE);
+        etSsCode.setVisibility(View.VISIBLE);
+        tvTips.setVisibility(View.VISIBLE);
+        connectButton.setText("连接设备");
     }
+
 
 }

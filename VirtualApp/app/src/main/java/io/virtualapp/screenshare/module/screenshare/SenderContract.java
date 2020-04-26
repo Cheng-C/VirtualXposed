@@ -1,13 +1,13 @@
-package io.virtualapp.screenshare;
+package io.virtualapp.screenshare.module.screenshare;
 
 import android.media.projection.MediaProjection;
 
-import io.virtualapp.screenshare.base.IBasePresenter;
-import io.virtualapp.screenshare.base.IBaseView;
+import io.virtualapp.screenshare.common.base.IBasePresenter;
+import io.virtualapp.screenshare.common.base.IBaseView;
 
 public class SenderContract {
     public interface IPresenter extends IBasePresenter<IView> {
-        void connect();
+        void connect(String userSsCode);
         void disconnect();
         void startScreenShare(MediaProjection mediaProjection);
         void stopScreenShare();

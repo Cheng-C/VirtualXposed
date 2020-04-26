@@ -1,10 +1,12 @@
-package io.virtualapp.screenshare.connection.udp;
+package io.virtualapp.screenshare.module.connection.udp;
 
 import android.util.Log;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+
+import io.virtualapp.screenshare.common.utils.ByteUtils;
 
 /**
  * Created by wt on 2018/7/11.
@@ -17,6 +19,7 @@ public class UdpClientThread extends Thread {
     private InetAddress inetAddress = null;
     //服务端的局域网IP
     private static String ip;
+    private static String ssCode;
     private OnUdpConnectListener mListener;
 
     public UdpClientThread(OnUdpConnectListener listener) {
@@ -43,10 +46,19 @@ public class UdpClientThread extends Thread {
             while (true) {
                 multicastSocket.receive(dp);
                 Log.e("UdpClientThread", "receive a msg");
-                ip = new String(buf, 0, dp.getLength());
+                byte[] ipLength = new byte[4];
+                byte[] ssCodeLength = new byte[4];
+                System.arraycopy(buf, 0, ipLength, 0, 4);
+                System.arraycopy(buf, 4, ssCodeLength, 0, 4);
+                byte[] ipData = new byte[ByteUtils.bytesToInt(ipLength)];
+                byte[] ssCodeData = new byte[ByteUtils.bytesToInt(ssCodeLength)];
+                System.arraycopy(buf, 8, ipData, 0, ipData.length);
+                System.arraycopy(buf, 8 + ipData.length, ssCodeData, 0, ssCodeData.length);
+                ip = new String(ipData);
+                ssCode = new String(ssCodeData);
                 multicastSocket.leaveGroup(inetAddress);
                 multicastSocket.close();
-                mListener.udpConnectSuccess(ip);
+                mListener.udpConnectSuccess(ip, ssCode);
             }
         } catch (Exception e) {
             mListener.udpDisConnect(e.getMessage());

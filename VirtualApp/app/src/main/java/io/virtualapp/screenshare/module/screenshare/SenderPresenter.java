@@ -1,8 +1,9 @@
-package io.virtualapp.screenshare;
+package io.virtualapp.screenshare.module.screenshare;
 
 import android.app.Activity;
 import android.media.projection.MediaProjection;
 import android.os.Handler;
+import android.util.Log;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -10,10 +11,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import io.virtualapp.screenshare.base.BasePresenter;
-import io.virtualapp.screenshare.connection.tcp.TcpConnection;
-import io.virtualapp.screenshare.connection.udp.OnUdpConnectListener;
-import io.virtualapp.screenshare.connection.udp.UdpClientThread;
+import io.virtualapp.screenshare.common.base.BasePresenter;
+import io.virtualapp.screenshare.module.connection.tcp.TcpConnection;
+import io.virtualapp.screenshare.module.connection.udp.OnUdpConnectListener;
+import io.virtualapp.screenshare.module.connection.udp.UdpClientThread;
+import io.virtualapp.screenshare.module.sender.ScreenSender;
 
 public class SenderPresenter extends BasePresenter<SenderContract.IView> implements SenderContract.IPresenter {
 
@@ -31,11 +33,16 @@ public class SenderPresenter extends BasePresenter<SenderContract.IView> impleme
     }
 
     @Override
-    public void connect() {
+    public void connect(String userSsCode) {
         clientThread = new UdpClientThread(new OnUdpConnectListener() {
             @Override
-            public void udpConnectSuccess(String ip) {
+            public void udpConnectSuccess(String ip, String ssCode) {
                 clientThread.interrupt();
+                // 传屏码不对
+                if (!userSsCode.equals(ssCode)) {
+                    Log.i(TAG, "udpConnectSuccess: 传屏码不对");
+                    return;
+                }
                 executorService.execute(new Runnable() {
                     @Override
                     public void run() {

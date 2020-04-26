@@ -25,7 +25,7 @@ import io.virtualapp.R;
 import io.virtualapp.VCommends;
 import io.virtualapp.gms.FakeGms;
 import io.virtualapp.home.ListAppActivity;
-import io.virtualapp.screenshare.SenderActivity;
+import io.virtualapp.screenshare.module.screenshare.SenderActivity;
 import io.virtualapp.utils.Misc;
 
 /**

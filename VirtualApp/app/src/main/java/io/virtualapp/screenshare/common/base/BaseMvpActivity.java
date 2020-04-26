@@ -1,4 +1,4 @@
-package io.virtualapp.screenshare.base;
+package io.virtualapp.screenshare.common.base;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

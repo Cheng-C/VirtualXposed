@@ -1,4 +1,4 @@
-package io.virtualapp.screenshare.utils;
+package io.virtualapp.screenshare.common.utils;
 
 public class ByteUtils {
     /**

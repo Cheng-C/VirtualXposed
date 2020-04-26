@@ -1,4 +1,4 @@
-package io.virtualapp.screenshare.base;
+package io.virtualapp.screenshare.common.base;
 
 public abstract class BasePresenter<V extends IBaseView> implements IBasePresenter<V> {
 

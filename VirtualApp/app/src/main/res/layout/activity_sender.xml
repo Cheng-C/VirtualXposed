@@ -1,28 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/darker_gray"
+    android:gravity="center">
+
+    <TextView
+        android:id="@+id/tvInputTips"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="输入传屏设备上的传屏码" />
+
+    <EditText
+        android:id="@+id/etSsCode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="68px"
+        android:gravity="center"
+        android:layout_marginHorizontal="40dp"
+        android:layout_marginTop="16dp" />
 
     <Button
         android:id="@+id/btnConnect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="连接"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:textColor="@android:color/white"
+        android:paddingHorizontal="40dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/button_shape"
+        android:text="连接设备"
+        android:textSize="18dp"/>
 
     <Button
         android:id="@+id/btnScreenShare"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="传屏"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnConnect" />
+        android:textColor="@android:color/white"
+        android:paddingHorizontal="40dp"
+        android:background="@drawable/button_shape"
+        android:layout_marginTop="16dp"
+        android:visibility="gone"
+        android:text="开始传屏"
+        android:textSize="18dp" />
 
-</android.support.constraint.ConstraintLayout>
+    <TextView
+        android:id="@+id/tvTips"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="提示：请将手机与投屏设备连接同一网络" />
+
+</LinearLayout>

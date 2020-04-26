@@ -9,8 +9,7 @@ import com.lody.virtual.client.core.VirtualCore;
 import com.lody.virtual.client.stub.VASettings;
 
 import io.virtualapp.delegate.MyVirtualInitializer;
-import io.virtualapp.screenshare.MyLifecycleHandler;
-import io.virtualapp.screenshare.SenderActivity;
+import io.virtualapp.screenshare.app.MyLifecycleHandler;
 
 /**
  * @author Lody

@@ -1,4 +1,4 @@
-package io.virtualapp.screenshare.connection.tcp;
+package io.virtualapp.screenshare.module.connection.tcp;
 
 import android.util.Log;
 
@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-import io.virtualapp.screenshare.utils.ByteUtils;
+import io.virtualapp.screenshare.common.utils.ByteUtils;
 
 
 public class TcpConnection {

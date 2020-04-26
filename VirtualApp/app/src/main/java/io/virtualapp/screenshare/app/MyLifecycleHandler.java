@@ -1,4 +1,4 @@
-package io.virtualapp.screenshare;
+package io.virtualapp.screenshare.app;
 
 import android.app.Activity;
 import android.app.Application;

@@ -1,4 +1,4 @@
-package io.virtualapp.screenshare;
+package io.virtualapp.screenshare.module.sender;
 
 
 import android.app.ActivityManager;
@@ -24,8 +24,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import io.virtualapp.screenshare.connection.tcp.TcpConnection;
-import io.virtualapp.screenshare.utils.ByteUtils;
+import io.virtualapp.screenshare.common.constant.Constants;
+import io.virtualapp.screenshare.common.utils.ByteUtils;
+import io.virtualapp.screenshare.module.connection.tcp.TcpConnection;
 
 import static android.content.Context.KEYGUARD_SERVICE;
 
@@ -136,6 +137,9 @@ public class ScreenSender implements Runnable {
             executorService.execute(new Runnable() {
                 @Override
                 public void run() {
+                    // 发送开始传屏命令
+                    byte[] data = buildSendContent(Constants.START_SCREEN_SHARE, 0, null);
+                    tcpConnection.sendData(data);
                     while(!quit.get()) {
 //                        if (isBackground(context)) {
 //                            Log.i(TAG, "run: 应用在后台");
@@ -156,7 +160,7 @@ public class ScreenSender implements Runnable {
                             outputBuffer.get(buffer);
 
                             Log.i(TAG, "run: size" + size);
-                            byte[] data = buildSendContent(Constants.SCREEN_SHARE, size, buffer);
+                            data = buildSendContent(Constants.SCREEN_SHARE_DATA, size, buffer);
                             tcpConnection.sendData(data);
                             encoder.releaseOutputBuffer(outputIndex, false);
                         }
