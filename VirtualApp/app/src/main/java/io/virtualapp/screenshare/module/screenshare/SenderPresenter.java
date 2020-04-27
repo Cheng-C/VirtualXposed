@@ -12,7 +12,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import io.virtualapp.screenshare.common.base.BasePresenter;
+import io.virtualapp.screenshare.module.connection.tcp.TcpConnectListener;
 import io.virtualapp.screenshare.module.connection.tcp.TcpConnection;
+import io.virtualapp.screenshare.module.connection.tcp.TcpDisconnectListener;
 import io.virtualapp.screenshare.module.connection.udp.OnUdpConnectListener;
 import io.virtualapp.screenshare.module.connection.udp.UdpClientThread;
 import io.virtualapp.screenshare.module.sender.ScreenSender;
@@ -29,11 +31,13 @@ public class SenderPresenter extends BasePresenter<SenderContract.IView> impleme
     private Handler updateUiHandler = new Handler();
 
     public SenderPresenter() {
+        Log.i(TAG, "new SenderPresenter");
         initThreadPool();
     }
 
     @Override
     public void connect(String userSsCode) {
+        Log.i(TAG, "connect");
         clientThread = new UdpClientThread(new OnUdpConnectListener() {
             @Override
             public void udpConnectSuccess(String ip, String ssCode) {
@@ -47,16 +51,7 @@ public class SenderPresenter extends BasePresenter<SenderContract.IView> impleme
                     @Override
                     public void run() {
 
-                        tcpConnection.connect(ip, 9988, new TcpConnection.TcpConnectListener() {
-                            @Override
-                            public void onSocketConnectSuccess() {
-
-                            }
-
-                            @Override
-                            public void onSocketConnectFail(String message) {
-
-                            }
+                        tcpConnection.connect(ip, 9988, new TcpConnectListener() {
 
                             @Override
                             public void onTcpConnectSuccess() {
@@ -73,14 +68,7 @@ public class SenderPresenter extends BasePresenter<SenderContract.IView> impleme
                             public void onTcpConnectFail(String message) {
 
                             }
-
-                            @Override
-                            public void onSocketDisconnect(String message) {
-                                // 与接收器断开连接
-                                updateUiHandler.post(() -> view.onDisconnectSuccess());
-                            }
                         });
-                        // tcpConnection.startReceiving();
                     }
                 });
             }
@@ -95,10 +83,11 @@ public class SenderPresenter extends BasePresenter<SenderContract.IView> impleme
 
     @Override
     public void disconnect() {
+        Log.i(TAG, "disconnect");
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                tcpConnection.disconnect(new TcpConnection.TcpDisconnectListener() {
+                tcpConnection.disconnect(new TcpDisconnectListener() {
                     @Override
                     public void onTcpDisconnectSuccess() {
                         updateUiHandler.post(() -> view.onDisconnectSuccess());
@@ -116,12 +105,14 @@ public class SenderPresenter extends BasePresenter<SenderContract.IView> impleme
 
     @Override
     public void startScreenShare(MediaProjection mediaProjection) {
+        Log.i(TAG, "startScreenShare");
         screenSender = new ScreenSender((Activity)view, mediaProjection);
         executorService.execute(screenSender);
     }
 
     @Override
     public void stopScreenShare() {
+        Log.i(TAG, "stopScreenShare");
         if (screenSender != null) {
             screenSender.stop();
             screenSender = null;
@@ -129,6 +120,7 @@ public class SenderPresenter extends BasePresenter<SenderContract.IView> impleme
     }
 
     private void initThreadPool() {
+        Log.i(TAG, "initThreadPool");
         int NUMBER_OF_CORES = Runtime.getRuntime().availableProcessors();
         int KEEP_ALIVE_TIME = 1;
         TimeUnit KEEP_ALIVE_TIME_UNIT = TimeUnit.SECONDS;

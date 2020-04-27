@@ -27,6 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import io.virtualapp.screenshare.common.constant.Constants;
 import io.virtualapp.screenshare.common.utils.ByteUtils;
 import io.virtualapp.screenshare.module.connection.tcp.TcpConnection;
+import io.virtualapp.screenshare.module.connection.tcp.TcpStatusListener;
 
 import static android.content.Context.KEYGUARD_SERVICE;
 
@@ -35,7 +36,7 @@ import static android.content.Context.KEYGUARD_SERVICE;
  */
 public class ScreenSender implements Runnable {
 
-    private static final String TAG = "ScreenEncoder";
+    private static final String TAG = "ScreenSender";
     private Context context;
     private MediaProjection mediaProjection;
     private VirtualDisplay virtualDisplay;
@@ -53,7 +54,7 @@ public class ScreenSender implements Runnable {
 
     private ByteBuffer outputBuffer;
     private MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
-    private MediaFormat outputFormat;
+    private MediaFormat mediaFormat;
 
     private AtomicBoolean quit = new AtomicBoolean(false);
 
@@ -123,7 +124,7 @@ public class ScreenSender implements Runnable {
 
     private void prepareEncoder() {
         // width 内容的宽度(以像素为单位) height 内容的高度(以像素为单位)
-        MediaFormat mediaFormat = MediaFormat.createVideoFormat(mimeType, width, height);
+        mediaFormat = MediaFormat.createVideoFormat(mimeType, width, height);
         mediaFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
         mediaFormat.setInteger(MediaFormat.KEY_FRAME_RATE, frameRate);
         mediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, bitRate);
@@ -138,17 +139,21 @@ public class ScreenSender implements Runnable {
                 @Override
                 public void run() {
                     // 发送开始传屏命令
+                    Log.i(TAG, "run: 发送开始传屏命令");
                     byte[] data = buildSendContent(Constants.START_SCREEN_SHARE, 0, null);
-                    tcpConnection.sendData(data);
+                    tcpConnection.sendData(data, new TcpStatusListener() {
+                        @Override
+                        public void onDisconnect() {
+
+                        }
+                    });
                     while(!quit.get()) {
 //                        if (isBackground(context)) {
 //                            Log.i(TAG, "run: 应用在后台");
 //                            stop();
 //                            continue;
 //                        }
-                        Log.i(TAG, "run: 执行1");
                         int outputIndex = encoder.dequeueOutputBuffer(bufferInfo, 10000);
-                        Log.i(TAG, "run: 执行2");
                         if (outputIndex >= 0) {
                             outputBuffer = encoder.getOutputBuffer(outputIndex);
                             int size = bufferInfo.size;
@@ -161,7 +166,12 @@ public class ScreenSender implements Runnable {
 
                             Log.i(TAG, "run: size" + size);
                             data = buildSendContent(Constants.SCREEN_SHARE_DATA, size, buffer);
-                            tcpConnection.sendData(data);
+                            tcpConnection.sendData(data, new TcpStatusListener() {
+                                @Override
+                                public void onDisconnect() {
+
+                                }
+                            });
                             encoder.releaseOutputBuffer(outputIndex, false);
                         }
                     }
@@ -192,8 +202,14 @@ public class ScreenSender implements Runnable {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
+                Log.i(TAG, "run: 发送停止投屏消息");
                 byte[] data = buildSendContent(Constants.STOP_SCREEN_SHARE, 0, null);
-                tcpConnection.sendData(data);
+                tcpConnection.sendData(data, new TcpStatusListener() {
+                    @Override
+                    public void onDisconnect() {
+
+                    }
+                });
             }
         });
     }

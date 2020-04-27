@@ -49,6 +49,13 @@ public class SenderActivity extends BaseMvpActivity<SenderContract.IPresenter> i
                     presenter.connect(etSsCode.getText().toString());
                     Toast.makeText(SenderActivity.this, "连接中...", Toast.LENGTH_SHORT).show();
                 } else {
+                    // 如果正在传屏则停止传屏
+                    if (mediaProjection != null) {
+                        presenter.stopScreenShare();
+                        mediaProjection.stop();
+                        mediaProjection = null;
+                        screenShareButton.setText("开始传屏");
+                    }
                     presenter.disconnect();
                 }
             }
@@ -59,10 +66,10 @@ public class SenderActivity extends BaseMvpActivity<SenderContract.IPresenter> i
             @Override
             public void onClick(View v) {
                 if (mediaProjection != null) {
-                   presenter.stopScreenShare();
-                   mediaProjection.stop();
-                   mediaProjection = null;
-                   screenShareButton.setText("开始传屏");
+                    presenter.stopScreenShare();
+                    mediaProjection.stop();
+                    mediaProjection = null;
+                    screenShareButton.setText("开始传屏");
                 } else {
                     Intent captureIntent = mediaProjectionManager.createScreenCaptureIntent();
                     startActivityForResult(captureIntent, REQUEST_SCREEN_SHARE);
