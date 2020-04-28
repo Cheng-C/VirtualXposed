@@ -94,7 +94,7 @@ public class ScreenSender implements Runnable {
     }
 
     public ScreenSender(Context context, MediaProjection mediaProjection) {
-        this(context, mediaProjection, 1280, 1920, 1,
+        this(context, mediaProjection, 1080, 1920, 1,
                 "video/avc", 30, 8000000, 10);
     }
 

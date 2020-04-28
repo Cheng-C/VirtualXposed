@@ -156,6 +156,7 @@ public class NewHomeActivity extends NexusLauncherActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
         if (checkXposedInstaller) {
             checkXposedInstaller = false;
             installXposed();
@@ -172,6 +173,10 @@ public class NewHomeActivity extends NexusLauncherActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_MENU) {
             onSettingsClicked();
+            return true;
+        }
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            finish();
             return true;
         }
         return super.onKeyDown(keyCode, event);

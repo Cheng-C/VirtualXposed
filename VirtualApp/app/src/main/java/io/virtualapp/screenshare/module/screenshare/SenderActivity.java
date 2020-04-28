@@ -111,11 +111,11 @@ public class SenderActivity extends BaseMvpActivity<SenderContract.IPresenter> i
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         Log.i(TAG, "Key_Status = " + event.getAction());
-        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-            // 右键处理
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
             moveTaskToBack(true);
+            return true;
         }
-        return true;
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
@@ -149,5 +149,12 @@ public class SenderActivity extends BaseMvpActivity<SenderContract.IPresenter> i
         connectButton.setText("连接设备");
     }
 
-
+    public void clickStopScreenShareButton() {
+        if (mediaProjection != null) {
+            presenter.stopScreenShare();
+            mediaProjection.stop();
+            mediaProjection = null;
+            screenShareButton.setText("开始传屏");
+        }
+    }
 }
